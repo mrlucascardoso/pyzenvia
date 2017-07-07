@@ -1,8 +1,7 @@
 language: python
 
 env:
-- ZENVIA_TOKEN=YWRtaW46YWRtaW4=
-- ZENVIA_URL=https://private-anon-31f1cb2966-zenviasms.apiary-mock.com
+- ZENVIA_TOKEN=YWRtaW46YWRtaW4=, ZENVIA_URL=https://private-anon-31f1cb2966-zenviasms.apiary-mock.com
 
 python:
   - "3.4"
