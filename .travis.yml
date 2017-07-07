@@ -1,5 +1,9 @@
 language: python
 
+env:
+- ZENVIA_TOKEN=YWRtaW46YWRtaW4=
+- ZENVIA_URL=https://private-anon-31f1cb2966-zenviasms.apiary-mock.com
+
 python:
   - "3.4"
   - "3.5"
@@ -11,6 +15,7 @@ python:
 
 # command to install dependencies
 install:
+  - pip install --upgrade setuptools
   - pip install -r requirements.txt
   - pip install coveralls
 
