@@ -2,3 +2,5 @@
 setup.cfg
 setup.py
 pyzenvia/__init__.py
+pyzenvia/exceptions.py
+pyzenvia/sender.py
