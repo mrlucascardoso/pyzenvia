@@ -6,3 +6,8 @@ class ZenviaTokenNotFound(Exception):
 
 class ZenviaUrlNotFound(Exception):
     pass
+
+
+
+class InvalidArgument(Exception):
+    pass
