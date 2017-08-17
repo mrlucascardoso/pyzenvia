@@ -1,41 +1,36 @@
 import requests as rq
-from .exceptions import ZenviaTokenNotFound, ZenviaUrlNotFound, InvalidArgument
-from decouple import config
+
+from pyzenvia.config import URLS
+from pyzenvia.enums import APIVersion
+import base64
 
 
 class Sender():
-    def __init__(self, phones, message, *args, **kwargs):
-
-        if not phones:
-            raise InvalidArgument('The argument phones must be a string of numbers or list of strings of numbers.')
-
-        if type(phones) == str:
-            self.phones = [phones, ]
-        elif type(phones) == list:
-            if not all(type(phone) is str for phone in phones):
-                raise InvalidArgument('The items in list phones must be a string.')
-
-            phones = [phone.strip() for phone in phones]
-
-            if not all(phone != '' for phone in phones):
-                raise InvalidArgument('The items in list phones must be a not cleaned string.')
-            self.phones = phones
-
-        # Check for message is not None or cleaned string or not string
-        if not message or type(message) != str:
-            raise InvalidArgument('The argument message must be a string.')
-
-        # Check for length string
-        if len(message) > 160:
-            raise InvalidArgument('Message size must be less than or equal to 160 characters.')
-
-        self.message = message
-        self.settings = load_settings()
+    def __init__(self, account, password, debug=False, api=APIVersion.V1, *args, **kwargs):
+        self.account = account
+        self.password = password
+        self.api = api
+        self.debug = debug
+        self.args = args
+        self.kwargs = kwargs
         for key, value in kwargs.items():
             setattr(self, key, value)
 
+    def get_url(self, operation):
+        return URLS[self.api]['debug'][operation] if self.debug else URLS[self.api]['production'][operation]
 
-    def _send(self, phone, message):
+    def get_token(self):
+        token = '{}:{}'.format(self.account, self.password)
+        return base64.b64encode(bytes(token, 'utf-8')).decode('utf-8')
+
+    def get_headers(self):
+        return {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Basic {}'.format(self.get_token())
+        }
+
+    def send(self, phone, message):
         result = {}
         success = False
 
@@ -75,31 +70,3 @@ class Sender():
             print(err)
 
         return {'success': success, 'result': result}
-
-    def send(self):
-        success = False
-
-        data = [self._send(phone, self.message) for phone in self.phones]
-
-        success = all(_['success'] for _ in data)
-        results = [_['result'] for _ in data]
-
-        return {'success': success, 'results': results}
-
-
-
-
-def load_settings():
-    ZENVIA_TOKEN = config('ZENVIA_TOKEN', default=None)
-    ZENVIA_URL = config('ZENVIA_URL', default=None)
-
-    if not ZENVIA_TOKEN:
-        raise ZenviaTokenNotFound()
-
-    if not ZENVIA_URL:
-        raise ZenviaUrlNotFound()
-
-    return {
-        'TOKEN': ZENVIA_TOKEN,
-        'BASE_URL': ZENVIA_URL
-    }
