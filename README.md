@@ -11,9 +11,7 @@ To use it is necessary to set two environment variables, one for the authenticat
 ## Prerequisites
 
 - Python version 3.4, 3.5 or 3.6
-- Environment variables
-    - ZENVIA_TOKEN=your token
-    - ZENVIA_URL=test zenvia url
+- Your account and password
 
 ```bash
 $ pip install pyzenvia
@@ -23,8 +21,8 @@ $ pip install pyzenvia
 
 ```python
 from pyzenvia import Sender
-sender = Sender('5586912344321', 'Hello')
-response = sender.send()
+sender = Sender(account, password)
+response = sender.send(phone, message)
 print(response['success'])
 print(response['results'])
 ```
