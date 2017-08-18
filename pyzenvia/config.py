@@ -6,7 +6,7 @@ URLS = {
             "send": ''
         },
         "production": {
-            "send": 'http://www.zenvia360.com.br/GatewayIntegration/msgSms.do'
+            "send": 'http://www.zenvia360.com.br/GatewayIntegration/msgSms.do?dispatch=send'
         }
     },
     APIVersion.V2: {

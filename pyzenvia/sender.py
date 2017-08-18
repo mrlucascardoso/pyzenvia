@@ -30,43 +30,29 @@ class Sender():
             'Authorization': 'Basic {}'.format(self.get_token())
         }
 
-    def send(self, phone, message):
+    def send(self, phone, message, **kwargs):
         result = {}
         success = False
+        if self.api == APIVersion.V1:
+            url = '{url}&account={account}&code={password}&to={phone}&msg={message}'.format(
+                url=self.get_url('send'),
+                account=self.account,
+                password=self.password,
+                phone=phone,
+                message=message
+            )
 
-        url = self.settings['BASE_URL'] + '/services/send-sms'
+            for key in kwargs.keys():
+                url += '&{key}={value}'.format(key=key, value=kwargs[key])
 
-        dispatcher = getattr(self, 'dispatcher', '')
-        schedule = getattr(self, 'schedule', '')
-        callback_option = getattr(self, 'callback_option', 'NONE')
-        _id = getattr(self, 'id', '')
-        aggregate_id = getattr(self, 'aggregate_id', '')
+            try:
+                response = rq.get(url, headers=self.get_headers())
+                result = response.text
+                if response.ok:
+                    success = True
+            except Exception as err:
+                print(err)
 
-        payload = {
-            "sendSmsRequest": {
-                "from": dispatcher,
-                "to": phone,
-                "schedule": schedule,
-                "msg": message,
-                "callbackOption": callback_option,
-                "id": _id,
-                "aggregateId": aggregate_id
-            }
-        }
-
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + self.settings['TOKEN'],
-            'Accept': 'application/json'
-        }
-
-        try:
-            response = rq.post(url, headers=headers, data=payload)
-            if response.ok:
-                success = True
-                result = response.json()
-
-        except Exception as err:
-            print(err)
-
-        return {'success': success, 'result': result}
+            return {'success': success, 'result': result}
+        else:
+            raise NotImplementedError()
