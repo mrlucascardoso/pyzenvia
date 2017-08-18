@@ -24,5 +24,5 @@ from pyzenvia import Sender
 sender = Sender(account, password)
 response = sender.send(phone, message)
 print(response['success'])
-print(response['results'])
+print(response['result'])
 ```
