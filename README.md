@@ -1,16 +1,14 @@
 # PyZenvia
 
-[![Build Status](https://travis-ci.org/MrLucasCardoso/pyzenvia.svg?branch=master)](https://travis-ci.org/MrLucasCardoso/pyzenvia)  [![Code Health](https://landscape.io/github/MrLucasCardoso/pyzenvia/master/landscape.svg?style=flat)](https://landscape.io/github/MrLucasCardoso/pyzenvia/master) [![Coverage Status](https://coveralls.io/repos/github/MrLucasCardoso/pyzenvia/badge.svg?branch=master)](https://coveralls.io/github/MrLucasCardoso/pyzenvia?branch=master)
+[![Build Status](https://travis-ci.org/MrLucasCardoso/pyzenvia.svg?branch=master)](https://travis-ci.org/MrLucasCardoso/pyzenvia)  [![Code Health](https://landscape.io/github/mrlucascardoso/pyzenvia/master/landscape.svg?style=flat)](https://landscape.io/github/mrlucascardoso/pyzenvia/master) [![Coverage Status](https://coveralls.io/repos/github/MrLucasCardoso/pyzenvia/badge.svg?branch=master)](https://coveralls.io/github/MrLucasCardoso/pyzenvia?branch=master) [![PyPi Version](https://img.shields.io/badge/pypi-v0.4-blue)](https://pypi.org/project/PyZenvia/)
 
 Package for send sms by Zenvia API
-
-To use it is necessary to set two environment variables, one for the authentication key of Zenvia and another to set BASE_URL. The BASE_URL must be set because you can test the messages in a Zenvia test url
 
 # Installation
 
 ## Prerequisites
 
-- Python version 3.4, 3.5 or 3.6
+- Python version >= 3.6
 - Your account and password
 
 ```bash
@@ -25,4 +23,5 @@ sender = Sender(account, password)
 response = sender.send(phone, message)
 print(response['success'])
 print(response['result'])
+print(response['error'])
 ```
