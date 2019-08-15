@@ -1,4 +1,4 @@
-import requests as rq
+import requests
 
 from pyzenvia.config import URLS
 from pyzenvia.enums import APIVersion
@@ -17,42 +17,58 @@ class Sender():
             setattr(self, key, value)
 
     def get_url(self, operation):
-        return URLS[self.api]['debug'][operation] if self.debug else URLS[self.api]['production'][operation]
+        url = URLS[self.api]['production'][operation]
 
+        if self.debug:
+            url = URLS[self.api]['debug'][operation]
+
+        return url
+
+    @property
     def get_token(self):
         token = '{}:{}'.format(self.account, self.password)
         return base64.b64encode(bytes(token, 'utf-8')).decode('utf-8')
 
+    @property
     def get_headers(self):
         return {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': 'Basic {}'.format(self.get_token())
+            'Authorization': f'Basic {self.get_token}'
         }
 
     def send(self, phone, message, **kwargs):
         result = {}
         success = False
         if self.api == APIVersion.V1:
-            url = '{url}&account={account}&code={password}&to={phone}&msg={message}'.format(
-                url=self.get_url('send'),
-                account=self.account,
-                password=self.password,
-                phone=phone,
-                message=message
-            )
+            url = f'{self.get_url("send")}\
+                &account={self.account}\
+                &code={self.password}\
+                &to={phone}\
+                &msg={message}'
 
             for key in kwargs.keys():
-                url += '&{key}={value}'.format(key=key, value=kwargs[key])
+                url += f'&{key}={kwargs[key]}'
 
             try:
-                response = rq.get(url, headers=self.get_headers())
+                response = requests.get(url, headers=self.get_headers)
                 result = response.text
                 if response.ok:
                     success = True
             except Exception as err:
-                print(err)
+                return {
+                    'success': success,
+                    'result': None,
+                    'error': {
+                        'message': str(err),
+                        'exception': err
+                    }
+                }
 
-            return {'success': success, 'result': result}
+            return {
+                'success': success,
+                'result': result,
+                'error': None
+            }
         else:
             raise NotImplementedError()
