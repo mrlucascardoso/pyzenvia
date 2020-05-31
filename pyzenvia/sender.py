@@ -38,37 +38,79 @@ class Sender():
         }
 
     def send(self, phone, message, **kwargs):
-        result = {}
-        success = False
         if self.api == APIVersion.V1:
-            url = f'{self.get_url("send")}\
-                &account={self.account}\
-                &code={self.password}\
-                &to={phone}\
-                &msg={message}'
-
-            for key in kwargs.keys():
-                url += f'&{key}={kwargs[key]}'
-
-            try:
-                response = requests.get(url, headers=self.get_headers)
-                result = response.text
-                if response.ok:
-                    success = True
-            except Exception as err:
-                return {
-                    'success': success,
-                    'result': None,
-                    'error': {
-                        'message': str(err),
-                        'exception': err
-                    }
-                }
-
-            return {
-                'success': success,
-                'result': result,
-                'error': None
-            }
+            return self._send_v1(phone, message, **kwargs)
+        elif self.api == APIVersion.V2:
+            return self._send_v2(phone, message, **kwargs)
         else:
             raise NotImplementedError()
+
+    def _send_v1(self, phone, message, **kwargs):
+        result = {}
+        success = False
+        url = f'{self.get_url("send")}\
+            &account={self.account}\
+            &code={self.password}\
+            &to={phone}\
+            &msg={message}'
+
+        for key in kwargs.keys():
+            url += f'&{key}={kwargs[key]}'
+
+        try:
+            response = requests.get(url, headers=self.get_headers)
+            result = response.text
+            if response.ok:
+                success = True
+        except Exception as err:
+            return {
+                'success': success,
+                'result': None,
+                'error': {
+                    'message': str(err),
+                    'exception': err
+                }
+            }
+
+        return {
+            'success': success,
+            'result': result,
+            'error': None
+        }
+
+    def _send_v2(self, phone, message, sender='', **kwargs):
+        result = {}
+        success = False
+
+        payload = {
+            "from": sender,
+            "to": phone,
+            "schedule": "2020-01-01T23:30:00", # Data/hora passada, envio imediato.
+            "msg": message,
+            "callbackOption": "NONE",
+            "id": "",
+            "aggregateId": "",
+            "flashSms": False
+        }
+        payload.update(kwargs)
+
+        try:
+            response = requests.post(self.get_url("send"), headers=self.get_headers, json={"sendSmsRequest": payload})
+            result = response.text
+            if response.ok:
+                success = True
+        except Exception as err:
+            return {
+                'success': success,
+                'result': None,
+                'error': {
+                    'message': str(err),
+                    'exception': err
+                }
+            }
+
+        return {
+            'success': success,
+            'result': result,
+            'error': None
+        }
