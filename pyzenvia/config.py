@@ -14,7 +14,7 @@ URLS = {
             "send": ''
         },
         "production": {
-            "send": ''
+            "send": 'https://api-rest.zenvia.com/services/send-sms'
         }
     }
 }
