@@ -25,3 +25,9 @@ print(response['success'])
 print(response['result'])
 print(response['error'])
 ```
+
+## Send SMS on command line
+
+```
+python -m pyzenvia --account zenvia_account_id --password mypass 5599999999999 "Sent using pyzenvia"
+```
